@@ -5,12 +5,12 @@
 #include <vector>
 
 enum class Suit { HEARTS, DIAMONDS, CLUBS, SPADES };
-enum class Rank { ACE = 1, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING, WILD };
+enum class Rank { ACE = 1, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING};
 
 struct Card {
     Suit suit;
     Rank rank;
-    
+
 
     bool operator==(const Card& other) const {
         return suit == other.suit && rank == other.rank;

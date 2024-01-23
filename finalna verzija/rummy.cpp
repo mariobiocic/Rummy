@@ -84,7 +84,8 @@ char Deck::getRankSymbol(Rank rank) const {
 
 // Implementacija funkcije printHand
 void Player::printHand() const {
-    for (size_t i = 0; i < hand.size(); ++i) {
+    for (size_t i = 0; i < hand.size(); ++i)
+    {
         cout << "[" << i + 1 << ": " << getSuitSymbol(hand[i].suit) << getRankSymbol(hand[i].rank) << "] ";
     }
     cout << "\n";
@@ -180,7 +181,7 @@ char Player::getRankSymbol(Rank rank) const {
 
 // Implementacija funkcije hasValidMeld
 bool Player::hasValidMeld() const {
-    // Jednostavan primer - proveravamo da li igrač ima bar jednu kartu u meld-u
+    // Jednostavan primer - provjeravamo da li igrač ima bar jednu kartu u meld-u
     return !melds.empty() && !melds[0].empty();
 }
 
@@ -255,12 +256,14 @@ void RummyGame::playGame() {
 int RummyGame::calculateScore(const Player& player) const {
     int score = 0;
 
-    // Bodovanje preostalih karata u ruci
-    for (const auto& card : player.hand) {
-        score += getCardValue(card);
+    // Bodovanje zadnjih 10 karata u ruci
+    size_t startIndex = (player.hand.size() > 10) ? player.hand.size() - 10 : 0;
+    for (size_t i = startIndex; i < player.hand.size(); ++i) {
+        const Card& currentCard = player.hand[i];
+        score += getCardValue(currentCard);
     }
 
-    // Bodovanje za svaki meld
+    // Bodovanje za svaku kartu u meldu
     for (const auto& meld : player.melds) {
         for (const auto& card : meld) {
             score += getCardValue(card);
@@ -297,33 +300,28 @@ void RummyGame::displayScoresAndWinner() const {
 
 // Implementacija funkcije getCardValue
 int RummyGame::getCardValue(const Card& card) const {
-    if (card.rank == Rank::WILD) {
-        // Ako je wild card, dodijeli mu 25 bodova
-        return 25;
-    }
-    else {
-        switch (card.rank) {
-        case Rank::ACE:
-            return 1;
-        case Rank::TWO:
-        case Rank::THREE:
-        case Rank::FOUR:
-        case Rank::FIVE:
-        case Rank::SIX:
-        case Rank::SEVEN:
-        case Rank::EIGHT:
-        case Rank::NINE:
-        case Rank::TEN:
-            return static_cast<int>(card.rank);
-        case Rank::JACK:
-        case Rank::QUEEN:
-        case Rank::KING:
-            return 10;
-        default:
-            return 0;  
-        }
+    switch (card.rank) {
+    case Rank::ACE:
+        return 1;
+    case Rank::TWO:
+    case Rank::THREE:
+    case Rank::FOUR:
+    case Rank::FIVE:
+    case Rank::SIX:
+    case Rank::SEVEN:
+    case Rank::EIGHT:
+    case Rank::NINE:
+    case Rank::TEN:
+        return static_cast<int>(card.rank);
+    case Rank::JACK:
+    case Rank::QUEEN:
+    case Rank::KING:
+        return 10;
+    default:
+        return 0;
     }
 }
+
 int main() {
     // Kreirajte Remi igru sa 2 igrača
     RummyGame game(2);
