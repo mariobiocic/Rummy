@@ -10,7 +10,16 @@ enum Rank { ACE = 1, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK,
 struct Card {
     Suit suit;
     Rank rank;
+
+    bool operator==(const Card& other) const {
+        return suit == other.suit && rank == other.rank;
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const Card& card);
 };
+
+std::ostream& operator<<(std::ostream& os, const Suit& suit);
+std::ostream& operator<<(std::ostream& os, const Rank& rank);
 
 class Deck {
 private:
@@ -24,6 +33,7 @@ public:
     void printDeck() const;
     char getSuitSymbol(Suit suit) const;
     char getRankSymbol(Rank rank) const;
+    std::size_t size() const;
 };
 
 struct Player {
@@ -32,13 +42,15 @@ struct Player {
     std::vector<Card> discardPile;
 
     void printHand() const;
-    void printHandASCII() const;  // Dodana funkcija za prikaz karata u ASCII artu
+    void printHandASCII() const;
     Card drawCard(Deck& deck);
     void discardCard(size_t index);
     char getSuitSymbol(Suit suit) const;
     char getRankSymbol(Rank rank) const;
     bool hasValidMeld() const;
     void addToMeld(const std::vector<Card>& meld);
+
+    friend std::ostream& operator<<(std::ostream& os, const Player& player);
 };
 
 class RummyGame {
@@ -46,7 +58,6 @@ private:
     Deck deck;
     std::vector<Player> players;
     size_t currentPlayerIndex;
-    
 
 public:
     RummyGame(size_t numPlayers);

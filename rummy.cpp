@@ -1,8 +1,8 @@
 ﻿#include "rummy.h"
-#include <algorithm> // Dodano za std::find
-#include <climits>   // Dodano za INT_MAX
+#include <algorithm>
+#include <climits>
 #include <random>
-#include <chrono> 
+#include <chrono>
 
 using namespace std;
 
@@ -18,11 +18,9 @@ Deck::Deck() {
 
 // Implementacija funkcije shuffleDeck
 void Deck::shuffleDeck() {
-    
     unsigned seed = static_cast<unsigned>(chrono::system_clock::now().time_since_epoch().count());
     mt19937 generator(seed);
 
-    
     shuffle(cards.begin(), cards.end(), generator);
 }
 
