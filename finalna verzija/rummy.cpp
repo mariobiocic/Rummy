@@ -215,32 +215,30 @@ void RummyGame::playGame() {
         cout << "\nPlayer " << currentPlayerIndex + 1 << "'s turn:\n";
         currentPlayer.printHandASCII();
 
-        if (currentPlayerIndex == 0) {
-            // Korisnički unos za prvog igrača
-            cout << "Choose an action:\n"
-                "1. Draw a card\n";
-            int choice;
+        // Draw a card
+        Card drawnCard = currentPlayer.drawCard(deck);
+        cout << "Drew Card: [" << deck.getSuitSymbol(drawnCard.suit) << deck.getRankSymbol(drawnCard.rank) << "]\n";
+
+        // Ask user which card to discard
+        if (currentPlayer.hand.size() > 10) {
+            cout << "Your hand has more than 10 cards. Choose a card to discard:\n";
+            currentPlayer.printHand();
+
+            int discardIndex;
             do {
-                cout << "Enter your choice (1): ";
-                cin >> choice;
+                cout << "Enter the index of the card to discard (1 to " << currentPlayer.hand.size() << "): ";
+                cin >> discardIndex;
 
                 if (cin.fail()) {
                     cin.clear();
                     cin.ignore(numeric_limits<streamsize>::max(), '\n');
                     cout << "Invalid input. Please enter a number.\n";
-                    choice = -1;
+                    discardIndex = -1;
                 }
-            } while (choice != 1);
+            } while (discardIndex < 1 || discardIndex > static_cast<int>(currentPlayer.hand.size()));
 
-            // Draw a card
-            Card drawnCard = currentPlayer.drawCard(deck);
-            cout << "Drew Card: [" << deck.getSuitSymbol(drawnCard.suit) << deck.getRankSymbol(drawnCard.rank) << "]\n";
-        }
-        else {
-            // Automatski potezi za drugog igrača
-            Card drawnCard = currentPlayer.drawCard(deck);
-            currentPlayer.discardCard(1);
-            cout << "Drew Card: [" << deck.getSuitSymbol(drawnCard.suit) << deck.getRankSymbol(drawnCard.rank) << "]\n";
+            // Discard the chosen card
+            currentPlayer.discardCard(static_cast<size_t>(discardIndex));
             cout << "Discarded Card: [" << deck.getSuitSymbol(currentPlayer.discardPile.back().suit)
                 << deck.getRankSymbol(currentPlayer.discardPile.back().rank) << "]\n";
         }
@@ -299,18 +297,33 @@ void RummyGame::displayScoresAndWinner() const {
 
 // Implementacija funkcije getCardValue
 int RummyGame::getCardValue(const Card& card) const {
-    switch (card.rank) {
-    case Rank::ACE:
-        return 1;
-    case Rank::JACK:
-    case Rank::QUEEN:
-    case Rank::KING:
-        return 10;
-    default:
-        return static_cast<int>(card.rank);
+    if (card.rank == Rank::WILD) {
+        // Ako je wild card, dodijeli mu 25 bodova
+        return 25;
+    }
+    else {
+        switch (card.rank) {
+        case Rank::ACE:
+            return 1;
+        case Rank::TWO:
+        case Rank::THREE:
+        case Rank::FOUR:
+        case Rank::FIVE:
+        case Rank::SIX:
+        case Rank::SEVEN:
+        case Rank::EIGHT:
+        case Rank::NINE:
+        case Rank::TEN:
+            return static_cast<int>(card.rank);
+        case Rank::JACK:
+        case Rank::QUEEN:
+        case Rank::KING:
+            return 10;
+        default:
+            return 0;  
+        }
     }
 }
-
 int main() {
     // Kreirajte Remi igru sa 2 igrača
     RummyGame game(2);
