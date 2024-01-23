@@ -4,8 +4,8 @@
 #include <iostream>
 #include <vector>
 
-enum Suit { HEARTS, DIAMONDS, CLUBS, SPADES };
-enum Rank { ACE = 1, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING };
+enum class Suit { HEARTS, DIAMONDS, CLUBS, SPADES };
+enum class Rank { ACE = 1, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN, JACK, QUEEN, KING };
 
 struct Card {
     Suit suit;
