@@ -107,8 +107,32 @@ void Player::printHandASCII() const {
 
 // Implementacija funkcije drawCard za igrača
 Card Player::drawCard(Deck& deck) {
+    // Uzimanje nove karte
     Card drawnCard = deck.drawCard();
     hand.push_back(drawnCard);
+
+    // Ako igrač ima više od 10 karata, pitajte ga koju kartu želi odbaciti
+    if (hand.size() > 10) {
+        cout << "Your hand has more than 10 cards. Choose a card to discard:\n";
+        printHand();
+
+        int discardIndex;
+        do {
+            cout << "Enter the index of the card to discard (1 to " << hand.size() << "): ";
+            cin >> discardIndex;
+
+            if (cin.fail()) {
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "Invalid input. Please enter a number.\n";
+                discardIndex = -1;
+            }
+        } while (discardIndex < 1 || discardIndex > static_cast<int>(hand.size()));
+
+        // Odbacivanje odabrane karte
+        discardCard(static_cast<size_t>(discardIndex));
+    }
+
     return drawnCard;
 }
 
@@ -191,7 +215,7 @@ void RummyGame::playGame() {
         Player& currentPlayer = players[currentPlayerIndex];
 
         cout << "\nPlayer " << currentPlayerIndex + 1 << "'s turn:\n";
-        currentPlayer.printHandASCII();  // Promenjeno za prikaz u ASCII artu
+        currentPlayer.printHandASCII();
 
         if (currentPlayerIndex == 0) {
             // Korisnički unos za prvog igrača
