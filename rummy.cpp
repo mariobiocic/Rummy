@@ -219,12 +219,11 @@ void RummyGame::playGame() {
 
         if (currentPlayerIndex == 0) {
             // Korisnički unos za prvog igrača
+            cout << "Choose an action:\n"
+                "1. Draw a card\n";
             int choice;
             do {
-                cout << "Choose an action:\n"
-                    "1. Draw a card\n"
-                    "2. Discard a card\n"
-                    "Enter your choice (1 or 2): ";
+                cout << "Enter your choice (1): ";
                 cin >> choice;
 
                 if (cin.fail()) {
@@ -233,33 +232,11 @@ void RummyGame::playGame() {
                     cout << "Invalid input. Please enter a number.\n";
                     choice = -1;
                 }
-            } while (choice != 1 && choice != 2);
+            } while (choice != 1);
 
-            if (choice == 1) {
-                // Draw a card
-                Card drawnCard = currentPlayer.drawCard(deck);
-                cout << "Drew Card: [" << deck.getSuitSymbol(drawnCard.suit) << deck.getRankSymbol(drawnCard.rank) << "]\n";
-            }
-            else {
-                // Discard a card
-                currentPlayer.printHand();
-                int discardIndex;
-                do {
-                    cout << "Enter the index of the card to discard (1 to " << currentPlayer.hand.size() << "): ";
-                    cin >> discardIndex;
-
-                    if (cin.fail()) {
-                        cin.clear();
-                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                        cout << "Invalid input. Please enter a number.\n";
-                        discardIndex = -1;
-                    }
-                } while (discardIndex < 1 || discardIndex > static_cast<int>(currentPlayer.hand.size()));
-
-                currentPlayer.discardCard(static_cast<size_t>(discardIndex));
-                cout << "Discarded Card: [" << deck.getSuitSymbol(currentPlayer.discardPile.back().suit)
-                    << deck.getRankSymbol(currentPlayer.discardPile.back().rank) << "]\n";
-            }
+            // Draw a card
+            Card drawnCard = currentPlayer.drawCard(deck);
+            cout << "Drew Card: [" << deck.getSuitSymbol(drawnCard.suit) << deck.getRankSymbol(drawnCard.rank) << "]\n";
         }
         else {
             // Automatski potezi za drugog igrača
