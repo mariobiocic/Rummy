@@ -1,6 +1,10 @@
 ﻿#include "rummy.h"
-#include <algorithm> // Dodato za std::find
-#include <climits>   // Dodato za INT_MAX
+#include <algorithm> // Dodano za std::find
+#include <climits>   // Dodano za INT_MAX
+#include <random>
+#include <chrono> 
+
+using namespace std;
 
 // Implementacija konstruktora klase Deck
 Deck::Deck() {
@@ -14,7 +18,12 @@ Deck::Deck() {
 
 // Implementacija funkcije shuffleDeck
 void Deck::shuffleDeck() {
-    std::random_shuffle(cards.begin(), cards.end());
+    
+    unsigned seed = static_cast<unsigned>(chrono::system_clock::now().time_since_epoch().count());
+    mt19937 generator(seed);
+
+    
+    shuffle(cards.begin(), cards.end(), generator);
 }
 
 // Implementacija funkcije drawCard
@@ -25,7 +34,7 @@ Card Deck::drawCard() {
         return drawnCard;
     }
     else {
-        std::cerr << "Error: The deck is empty.\n";
+        cerr << "Error: The deck is empty.\n";
         exit(EXIT_FAILURE);
     }
 }
@@ -38,9 +47,9 @@ bool Deck::empty() const {
 // Implementacija funkcije printDeck
 void Deck::printDeck() const {
     for (const auto& card : cards) {
-        std::cout << "[" << getSuitSymbol(card.suit) << getRankSymbol(card.rank) << "] ";
+        cout << "[" << getSuitSymbol(card.suit) << getRankSymbol(card.rank) << "] ";
     }
-    std::cout << "\n";
+    cout << "\n";
 }
 
 // Implementacija funkcije getSuitSymbol
@@ -78,22 +87,22 @@ char Deck::getRankSymbol(Rank rank) const {
 // Implementacija funkcije printHand
 void Player::printHand() const {
     for (size_t i = 0; i < hand.size(); ++i) {
-        std::cout << "[" << i + 1 << ": " << getSuitSymbol(hand[i].suit) << getRankSymbol(hand[i].rank) << "] ";
+        cout << "[" << i + 1 << ": " << getSuitSymbol(hand[i].suit) << getRankSymbol(hand[i].rank) << "] ";
     }
-    std::cout << "\n";
+    cout << "\n";
 }
 
 // Implementacija funkcije printHandASCII
 void Player::printHandASCII() const {
     for (size_t i = 0; i < hand.size(); ++i) {
-        std::cout << " _________\n";
-        std::cout << "|         |\n";
-        std::cout << "|    " << getRankSymbol(hand[i].rank) << "    |\n";
-        std::cout << "|    " << getSuitSymbol(hand[i].suit) << "    |\n";
-        std::cout << "|         |\n";
-        std::cout << "|_________|\n";
+        cout << " _________\n";
+        cout << "|         |\n";
+        cout << "|    " << getRankSymbol(hand[i].rank) << "    |\n";
+        cout << "|    " << getSuitSymbol(hand[i].suit) << "    |\n";
+        cout << "|         |\n";
+        cout << "|_________|\n";
     }
-    std::cout << "\n";
+    cout << "\n";
 }
 
 // Implementacija funkcije drawCard za igrača
@@ -111,7 +120,7 @@ void Player::discardCard(size_t index) {
         hand.erase(hand.begin() + index - 1);
     }
     else {
-        std::cout << "Invalid index. Try again.\n";
+        cout << "Invalid index. Try again.\n";
     }
 }
 
@@ -154,7 +163,7 @@ bool Player::hasValidMeld() const {
 }
 
 // Implementacija funkcije addToMeld
-void Player::addToMeld(const std::vector<Card>& meld) {
+void Player::addToMeld(const vector<Card>& meld) {
     melds.push_back(meld);
 }
 
@@ -181,23 +190,23 @@ void RummyGame::playGame() {
     while (!isGameOver()) {
         Player& currentPlayer = players[currentPlayerIndex];
 
-        std::cout << "\nPlayer " << currentPlayerIndex + 1 << "'s turn:\n";
+        cout << "\nPlayer " << currentPlayerIndex + 1 << "'s turn:\n";
         currentPlayer.printHandASCII();  // Promenjeno za prikaz u ASCII artu
 
         if (currentPlayerIndex == 0) {
             // Korisnički unos za prvog igrača
             int choice;
             do {
-                std::cout << "Choose an action:\n"
+                cout << "Choose an action:\n"
                     "1. Draw a card\n"
                     "2. Discard a card\n"
                     "Enter your choice (1 or 2): ";
-                std::cin >> choice;
+                cin >> choice;
 
-                if (std::cin.fail()) {
-                    std::cin.clear();
-                    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                    std::cout << "Invalid input. Please enter a number.\n";
+                if (cin.fail()) {
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    cout << "Invalid input. Please enter a number.\n";
                     choice = -1;
                 }
             } while (choice != 1 && choice != 2);
@@ -205,26 +214,26 @@ void RummyGame::playGame() {
             if (choice == 1) {
                 // Draw a card
                 Card drawnCard = currentPlayer.drawCard(deck);
-                std::cout << "Drew Card: [" << deck.getSuitSymbol(drawnCard.suit) << deck.getRankSymbol(drawnCard.rank) << "]\n";
+                cout << "Drew Card: [" << deck.getSuitSymbol(drawnCard.suit) << deck.getRankSymbol(drawnCard.rank) << "]\n";
             }
             else {
                 // Discard a card
                 currentPlayer.printHand();
                 int discardIndex;
                 do {
-                    std::cout << "Enter the index of the card to discard (1 to " << currentPlayer.hand.size() << "): ";
-                    std::cin >> discardIndex;
+                    cout << "Enter the index of the card to discard (1 to " << currentPlayer.hand.size() << "): ";
+                    cin >> discardIndex;
 
-                    if (std::cin.fail()) {
-                        std::cin.clear();
-                        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-                        std::cout << "Invalid input. Please enter a number.\n";
+                    if (cin.fail()) {
+                        cin.clear();
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                        cout << "Invalid input. Please enter a number.\n";
                         discardIndex = -1;
                     }
                 } while (discardIndex < 1 || discardIndex > static_cast<int>(currentPlayer.hand.size()));
 
                 currentPlayer.discardCard(static_cast<size_t>(discardIndex));
-                std::cout << "Discarded Card: [" << deck.getSuitSymbol(currentPlayer.discardPile.back().suit)
+                cout << "Discarded Card: [" << deck.getSuitSymbol(currentPlayer.discardPile.back().suit)
                     << deck.getRankSymbol(currentPlayer.discardPile.back().rank) << "]\n";
             }
         }
@@ -232,19 +241,20 @@ void RummyGame::playGame() {
             // Automatski potezi za drugog igrača
             Card drawnCard = currentPlayer.drawCard(deck);
             currentPlayer.discardCard(1);
-            std::cout << "Drew Card: [" << deck.getSuitSymbol(drawnCard.suit) << deck.getRankSymbol(drawnCard.rank) << "]\n";
-            std::cout << "Discarded Card: [" << deck.getSuitSymbol(currentPlayer.discardPile.back().suit)
+            cout << "Drew Card: [" << deck.getSuitSymbol(drawnCard.suit) << deck.getRankSymbol(drawnCard.rank) << "]\n";
+            cout << "Discarded Card: [" << deck.getSuitSymbol(currentPlayer.discardPile.back().suit)
                 << deck.getRankSymbol(currentPlayer.discardPile.back().rank) << "]\n";
         }
 
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
     }
 
-    std::cout << "\nGame over!\n";
+    cout << "\nGame over!\n";
 
     displayScoresAndWinner();
 }
 
+// Implementacija funkcije calculateScore
 int RummyGame::calculateScore(const Player& player) const {
     int score = 0;
 
@@ -270,9 +280,9 @@ bool RummyGame::isGameOver() const {
 
 // Implementacija funkcije displayScoresAndWinner
 void RummyGame::displayScoresAndWinner() const {
-    std::cout << "\nScores:\n";
+    cout << "\nScores:\n";
     for (size_t i = 0; i < players.size(); ++i) {
-        std::cout << "Player " << i + 1 << ": " << calculateScore(players[i]) << " points\n";
+        cout << "Player " << i + 1 << ": " << calculateScore(players[i]) << " points\n";
     }
 
     int winningScore = INT_MAX;
@@ -285,7 +295,7 @@ void RummyGame::displayScoresAndWinner() const {
         }
     }
 
-    std::cout << "\nPlayer " << winnerIndex + 1 << " wins with " << winningScore << " points!\n";
+    cout << "\nPlayer " << winnerIndex + 1 << " wins with " << winningScore << " points!\n";
 }
 
 // Implementacija funkcije getCardValue
